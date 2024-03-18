@@ -17,6 +17,5 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({ default: { id: '1' } })
-  @IsNotEmpty()
   role: object;
 }

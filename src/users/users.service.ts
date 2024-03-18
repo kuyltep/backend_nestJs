@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +25,13 @@ export class UsersService {
     } else if (existingUserByEmail) {
       throw new BadRequestException(`Email ${dto.email} уже существует`);
     }
-    return this.repository.save(dto);
+    const user = {
+      username: dto.username,
+      password: await argon2.hash(dto.password),
+      email: dto.email,
+      role: dto.role,
+    };
+    return await this.repository.save(user);
   }
 
   async findByUsername(username: string) {
