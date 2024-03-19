@@ -1,4 +1,11 @@
-import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  Post,
+  UseGuards,
+  Body,
+  Get,
+} from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 
 import { UserEntity } from '../users/entities/user.entity';
@@ -6,6 +13,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
+import { JwtAuthGuard } from './guards/jwt.guard';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -22,5 +30,11 @@ export class AuthController {
   @Post('register')
   register(@Body() dto: CreateUserDto) {
     return this.authService.register(dto);
+  }
+
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  getProfile(@Request() req) {
+    return req.user;
   }
 }

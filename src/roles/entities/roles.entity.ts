@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { UserEntity } from 'src/users/entities/user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('role')
 export class RoleEntity {
@@ -6,4 +13,8 @@ export class RoleEntity {
   id: number;
   @Column()
   name: string;
+
+  @OneToMany(() => UserEntity, (user) => user.id, { nullable: true })
+  @JoinColumn({ name: 'users_id' })
+  users: UserEntity[];
 }

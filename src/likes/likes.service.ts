@@ -10,10 +10,30 @@ export class LikesService {
     private readonly LikeRepository: Repository<LikeEntity>,
   ) {}
   async findUserLikes(userId: number) {
-    return await this.LikeRepository.findBy({ id: userId });
+    return await this.LikeRepository.find({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+      relations: {
+        user: true,
+        text: true,
+      },
+    });
   }
   async findPostLikes(postId: number) {
-    return await this.LikeRepository.findBy({ id: postId });
+    return await this.LikeRepository.find({
+      where: {
+        text: {
+          id: postId,
+        },
+      },
+      relations: {
+        user: true,
+        text: true,
+      },
+    });
   }
   async createUserLike(userId: number, textId: number) {
     const isExist = await this.LikeRepository.findBy({

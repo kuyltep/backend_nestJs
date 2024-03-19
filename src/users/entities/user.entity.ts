@@ -45,7 +45,7 @@ export class UserEntity {
   @JoinColumn({ name: 'likes_id' })
   likes: LikeEntity[];
 
-  @OneToOne(() => RoleEntity)
+  @ManyToOne(() => RoleEntity, (role) => role.users)
   @JoinColumn({ name: 'role_id' })
   role: RoleEntity;
 }

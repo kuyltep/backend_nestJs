@@ -5,7 +5,4 @@ export class LoginUserDto {
 
   @ApiProperty({ default: '123' })
   password: string;
-
-  @ApiProperty({ default: 'hello@gmail.com' })
-  email: string;
 }

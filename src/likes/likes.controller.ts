@@ -5,11 +5,11 @@ import { CreateLikeDto } from './dto/like.dto';
 @Controller('likes')
 export class LikesController {
   constructor(private readonly LikesService: LikesService) {}
-  @Get(':userId')
+  @Get('user/:userId')
   findUserLikes(@Param('userId') userId: string) {
     return this.LikesService.findUserLikes(+userId);
   }
-  @Get(':postId')
+  @Get('post/:postId')
   findPostLikes(@Param('postId') postId: string) {
     return this.LikesService.findPostLikes(+postId);
   }

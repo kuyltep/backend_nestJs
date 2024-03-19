@@ -10,6 +10,8 @@ import { UserEntity } from '../users/entities/user.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 
+import * as argon2 from 'argon2';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,10 +20,10 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string) {
     const user = await this.usersService.findByUsername(username);
-
-    if (user && user.password === password) {
+    const passwordIsMatch = argon2.verify(user.password, password);
+    if (user && passwordIsMatch) {
       const { password, ...result } = user;
       return result;
     }
