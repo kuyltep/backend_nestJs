@@ -12,6 +12,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CreateCommentLikeDto } from 'src/comment_likes/dto/create-comment_like.dto';
+import { CommentLikeEntity } from 'src/comment_likes/entities/comment_like.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -48,4 +50,8 @@ export class UserEntity {
   @ManyToOne(() => RoleEntity, (role) => role.users)
   @JoinColumn({ name: 'role_id' })
   role: RoleEntity;
+
+  @OneToMany(() => CommentLikeEntity, (commentLike) => commentLike.user)
+  @JoinColumn({ name: 'comments_like' })
+  comments_like: CommentLikeEntity[];
 }

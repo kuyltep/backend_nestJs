@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
+import { CommentLikesModule } from './comment_likes/comment_likes.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CommentsModule } from './comments/comments.module';
     RolesModule,
     LikesModule,
     CommentsModule,
+    CommentLikesModule,
   ],
   controllers: [],
   providers: [],

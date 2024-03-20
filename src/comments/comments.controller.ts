@@ -8,25 +8,19 @@ import {
   Put,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { CommentDto } from './dto/comment.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
   @Post()
-  create(@Body() createCommentDto: CommentDto) {
-    return this.commentsService.create(createCommentDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.commentsService.findAll();
-  }
-
-  @Get('id')
-  findOne(@Param('id') id: string) {
-    return this.commentsService.findOne(+id);
+  create(@Body() createCommentDto: CreateCommentDto) {
+    return this.commentsService.create(
+      +createCommentDto.user,
+      +createCommentDto.product,
+      createCommentDto.content,
+    );
   }
 
   @Put('id')

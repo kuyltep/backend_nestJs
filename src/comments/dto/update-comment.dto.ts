@@ -1,3 +1,3 @@
-import { CommentDto } from './comment.dto';
+import { CreateCommentDto } from './create-comment.dto';
 
-export class UpdateCommentDto extends CommentDto {}
+export class UpdateCommentDto extends CreateCommentDto {}

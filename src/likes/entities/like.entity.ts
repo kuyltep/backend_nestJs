@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('like')
+@Entity('product_like')
 export class LikeEntity {
   @PrimaryGeneratedColumn()
   id: number;
