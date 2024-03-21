@@ -32,7 +32,7 @@ export class ProductEntity {
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @ManyToOne(() => CategoryEntity, (category) => category.texts)
+  @ManyToOne(() => CategoryEntity, (category) => category.products)
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity;
 

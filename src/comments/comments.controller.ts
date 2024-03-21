@@ -10,7 +10,9 @@ import {
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-
+import { ApiTags } from '@nestjs/swagger';
+import { DeleteCommentDto } from './dto/delete-comment.dto';
+@ApiTags('comments')
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
@@ -23,13 +25,21 @@ export class CommentsController {
     );
   }
 
-  @Put('id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentsService.update(+id, updateCommentDto);
+  @Put()
+  update(@Body() updateCommentDto: UpdateCommentDto) {
+    return this.commentsService.update(updateCommentDto);
   }
 
-  @Delete('id')
-  remove(@Param('id') id: string) {
-    return this.commentsService.remove(+id);
+  @Delete(':commentId')
+  remove(
+    @Param('commentId') commentId: number,
+    @Body() deleteCommentDto: DeleteCommentDto,
+  ) {
+    return this.commentsService.remove(+commentId, deleteCommentDto);
+  }
+
+  @Get('users/:userId')
+  getUserComments(@Param('userId') userId: string) {
+    return this.commentsService.getUserComments(+userId);
   }
 }

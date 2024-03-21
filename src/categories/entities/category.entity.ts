@@ -17,14 +17,12 @@ export class CategoryEntity {
   @Column()
   name: string;
 
-  @OneToMany(() => ProductEntity, (text) => text.category)
-  @JoinColumn({ name: 'texts_id' })
-  texts: ProductEntity[];
-
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @ApiHideProperty()
-  @OneToMany(() => ProductEntity, (product) => product.category)
+  @OneToMany(() => ProductEntity, (product) => product.category, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'products_id' })
   products: ProductEntity[];
 }

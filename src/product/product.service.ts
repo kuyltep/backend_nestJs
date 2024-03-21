@@ -47,7 +47,10 @@ export class ProductService {
   }
 
   async findOne(id: number): Promise<ProductEntity> {
-    return this.productRepository.findOneBy({ id });
+    return this.productRepository.findOne({
+      where: { id: id },
+      relations: { category: true, likes: true },
+    });
   }
 
   async findByCategoryId(categoryId: number): Promise<ProductEntity[]> {
