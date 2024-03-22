@@ -35,10 +35,16 @@ export class UsersService {
   }
 
   async findByUsername(username: string) {
-    return this.repository.findOneBy({ username });
+    return this.repository.findOne({
+      where: { username: username },
+      relations: { comments: true, likes: true, role: true },
+    });
   }
 
   async findById(id: number) {
-    return this.repository.findOneBy({ id });
+    return this.repository.findOne({
+      where: { id: id },
+      relations: { comments: true, likes: true, role: true },
+    });
   }
 }

@@ -43,7 +43,14 @@ export class ProductService {
   }
 
   async findAll(): Promise<ProductEntity[]> {
-    return this.productRepository.find();
+    return this.productRepository.find({
+      relations: {
+        likes: true,
+        comments: { comment_likes: true },
+        category: true,
+        user: true,
+      },
+    });
   }
 
   async findOne(id: number): Promise<ProductEntity> {
@@ -53,6 +60,7 @@ export class ProductService {
         category: true,
         likes: true,
         comments: { comment_likes: true },
+        user: true,
       },
     });
   }

@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,6 +17,13 @@ export class UsersController {
   // }
 
   @ApiBearerAuth('token')
+  @ApiHeader({
+    name: 'token',
+    schema: {
+      type: 'http',
+      required: ['id'],
+    },
+  })
   @Get('me')
   @UseGuards(JwtAuthGuard)
   getMe(@UserId() id: number) {
