@@ -16,8 +16,8 @@ export class UsersController {
   //   return this.usersService.create(createUserDto);
   // }
 
+  @ApiBearerAuth('token')
   @Get('me')
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   getMe(@UserId() id: number) {
     return this.usersService.findById(id);

@@ -81,7 +81,7 @@ export class CommentsService {
   }
 
   async getUserComments(userId: number) {
-    return this.CommentRepository.find({
+    return await this.CommentRepository.find({
       where: {
         user: {
           id: userId,
@@ -89,6 +89,18 @@ export class CommentsService {
       },
       relations: {
         product: true,
+      },
+    });
+  }
+  async getProductComments(productId: number) {
+    return await this.CommentRepository.find({
+      where: {
+        product: {
+          id: productId,
+        },
+      },
+      relations: {
+        comment_likes: true,
       },
     });
   }

@@ -42,4 +42,9 @@ export class CommentsController {
   getUserComments(@Param('userId') userId: string) {
     return this.commentsService.getUserComments(+userId);
   }
+
+  @Get('products/:productId')
+  getProductComments(@Param('productId') productId: string) {
+    return this.commentsService.getProductComments(+productId);
+  }
 }

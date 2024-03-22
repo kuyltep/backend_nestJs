@@ -11,6 +11,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CommentEntity } from 'src/comments/entities/comment.entity';
 
 @Entity('product')
 export class ProductEntity {
@@ -43,4 +44,8 @@ export class ProductEntity {
   @OneToMany(() => LikeEntity, (like) => like.text)
   @JoinColumn({ name: 'likes_id' })
   likes: LikeEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.product)
+  @JoinColumn({ name: 'comments_id' })
+  comments: CommentEntity[];
 }

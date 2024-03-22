@@ -17,7 +17,4 @@ export class CreateCommentDto {
   @ApiProperty({ default: '1' })
   @IsNotEmpty()
   product: ProductEntity;
-
-  @ApiProperty({ default: '[]' })
-  comment_likes: CommentLikeEntity[];
 }

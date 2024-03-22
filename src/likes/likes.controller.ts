@@ -16,10 +16,10 @@ export class LikesController {
   }
   @Post()
   createUserLike(@Body() likeDto: CreateLikeDto) {
-    return this.LikesService.createUserLike(+likeDto.user, +likeDto.text);
+    return this.LikesService.createUserLike(+likeDto.user, +likeDto.product);
   }
   @Delete()
   removeUserLike(@Body() likeDto: CreateLikeDto) {
-    return this.LikesService.removeUserLike(+likeDto.user, +likeDto.text);
+    return this.LikesService.removeUserLike(+likeDto.user, +likeDto.product);
   }
 }

@@ -9,5 +9,5 @@ export class CreateLikeDto {
   user: UserEntity;
   @ApiProperty({ default: '1' })
   @IsNotEmpty()
-  text: ProductEntity;
+  product: ProductEntity;
 }
