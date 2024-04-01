@@ -4,47 +4,60 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
+  Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { DeleteCommentDto } from './dto/delete-comment.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 @ApiTags('comments')
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
+  create(@Body() createCommentDto: CreateCommentDto, @Req() request) {
+    const { id: userId, ...userData } = request.user;
     return this.commentsService.create(
-      +createCommentDto.user,
+      +userId,
       +createCommentDto.product,
       createCommentDto.content,
     );
   }
 
-  @Put()
-  update(@Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentsService.update(updateCommentDto);
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
+  @Patch()
+  update(@Body() updateCommentDto: UpdateCommentDto, @Req() request) {
+    const { id: userId, ...userData } = request.user;
+    return this.commentsService.update(updateCommentDto, userId);
   }
 
-  @Delete(':commentId')
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
+  @Delete()
   remove(
-    @Param('commentId') commentId: number,
+    @Query('id') commentId: number,
     @Body() deleteCommentDto: DeleteCommentDto,
+    @Req() request,
   ) {
-    return this.commentsService.remove(+commentId, deleteCommentDto);
+    const { id: userId, ...userData } = request.user;
+    return this.commentsService.remove(+commentId, deleteCommentDto, +userId);
   }
 
-  @Get('users/:userId')
-  getUserComments(@Param('userId') userId: string) {
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
+  @Get('user')
+  getUserComments(@Req() request) {
+    const { id: userId, ...userData } = request.user;
     return this.commentsService.getUserComments(+userId);
-  }
-
-  @Get('products/:productId')
-  getProductComments(@Param('productId') productId: string) {
-    return this.commentsService.getProductComments(+productId);
   }
 }

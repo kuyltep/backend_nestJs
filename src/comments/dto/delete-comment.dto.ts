@@ -6,9 +6,5 @@ import { UserEntity } from 'src/users/entities/user.entity';
 export class DeleteCommentDto {
   @ApiProperty({ default: '1' })
   @IsNotEmpty()
-  user: UserEntity;
-
-  @ApiProperty({ default: '1' })
-  @IsNotEmpty()
   product: ProductEntity;
 }
