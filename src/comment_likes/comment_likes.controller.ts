@@ -1,29 +1,47 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateCommentLikeDto } from './dto/create-comment_like.dto';
 import { CommentLikesService } from './comment_likes.service';
 import { DeleteUserCommentLikeDto } from './dto/delete-comment_like.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 @ApiTags('comment-likes')
 @Controller('comment-likes')
 export class CommentLikesController {
   constructor(private readonly CommentLikesService: CommentLikesService) {}
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() commentLikeDto: CreateCommentLikeDto) {
-    return this.CommentLikesService.create(
-      +commentLikeDto.user,
-      +commentLikeDto.comment,
-    );
+  create(@Body() commentLikeDto: CreateCommentLikeDto, @Req() request) {
+    const { id: userId, ...userData } = request.user;
+    return this.CommentLikesService.create(+userId, +commentLikeDto.comment);
   }
-  @Get('user/:userId')
-  getUserCommentLikes(@Param('userId') userId: string) {
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
+  @Get('user')
+  getUserCommentLikes(@Req() request) {
+    const { id: userId, ...userData } = request.user;
     return this.CommentLikesService.findUserCommentLikes(+userId);
   }
+
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
   @Delete('delete-like')
   deleteUserCommentLike(
     @Body() deleteUserCommentLike: DeleteUserCommentLikeDto,
+    @Req() request,
   ) {
+    const { id: userId, ...userData } = request.user;
     return this.CommentLikesService.deleteUserCommentLike(
-      +deleteUserCommentLike.user,
+      +userId,
       +deleteUserCommentLike.comment,
     );
   }
