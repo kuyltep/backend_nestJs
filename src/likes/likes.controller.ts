@@ -1,23 +1,34 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { LikesService } from './likes.service';
 import { CreateLikeDto } from './dto/like.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 @ApiTags('product-likes')
 @Controller('product-likes')
 export class LikesController {
   constructor(private readonly LikesService: LikesService) {}
-  @Get('user/:userId')
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
+  @Get('user/likes')
   findUserLikes(@Param('userId') userId: string) {
     return this.LikesService.findUserLikes(+userId);
   }
-  @Get('post/:postId')
-  findPostLikes(@Param('postId') postId: string) {
-    return this.LikesService.findPostLikes(+postId);
-  }
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
   @Post()
   createUserLike(@Body() likeDto: CreateLikeDto) {
     return this.LikesService.createUserLike(+likeDto.user, +likeDto.product);
   }
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
   @Delete()
   removeUserLike(@Body() likeDto: CreateLikeDto) {
     return this.LikesService.removeUserLike(+likeDto.user, +likeDto.product);
