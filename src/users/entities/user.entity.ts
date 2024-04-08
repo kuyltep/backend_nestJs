@@ -57,7 +57,10 @@ export class UserEntity {
   @JoinColumn({ name: 'likes_id' })
   likes: LikeEntity[];
 
-  @ManyToOne(() => RoleEntity, (role) => role.users)
+  @ManyToOne(() => RoleEntity, (role) => role.users, {
+    nullable: false,
+    onDelete: 'NO ACTION',
+  })
   @JoinColumn({ name: 'role_id' })
   role: RoleEntity;
 
@@ -68,7 +71,10 @@ export class UserEntity {
   @JoinColumn({ name: 'comments_like' })
   comments_like: CommentLikeEntity[];
 
-  @OneToMany(() => AudioEntity, (audio) => audio.user)
+  @OneToMany(() => AudioEntity, (audio) => audio.user, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'audios_id' })
   audio: AudioEntity[];
 }
