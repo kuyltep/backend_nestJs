@@ -12,6 +12,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CommentEntity } from 'src/comments/entities/comment.entity';
+import AudioEntity from 'src/audio/entities/audio.entity';
 
 @Entity('product')
 export class ProductEntity {
@@ -48,4 +49,8 @@ export class ProductEntity {
   @OneToMany(() => CommentEntity, (comment) => comment.product)
   @JoinColumn({ name: 'comments_id' })
   comments: CommentEntity[];
+
+  @OneToOne(() => AudioEntity, (audio) => audio.product)
+  @JoinColumn({ name: 'audio_id' })
+  audio: AudioEntity;
 }

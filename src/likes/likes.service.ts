@@ -22,19 +22,6 @@ export class LikesService {
       },
     });
   }
-  async findPostLikes(postId: number) {
-    return await this.LikeRepository.find({
-      where: {
-        text: {
-          id: postId,
-        },
-      },
-      relations: {
-        user: true,
-        text: true,
-      },
-    });
-  }
   async createUserLike(userId: number, textId: number) {
     const isExist = await this.LikeRepository.findBy({
       user: { id: userId },

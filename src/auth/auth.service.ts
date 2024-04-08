@@ -39,8 +39,9 @@ export class AuthService {
 
     try {
       const userData = await this.usersService.create(dto);
-
+      const { password, ...user } = userData;
       return {
+        user,
         token: this.jwtService.sign({ id: userData.id }),
       };
     } catch (err) {
@@ -49,8 +50,10 @@ export class AuthService {
     }
   }
 
-  async login(user: UserEntity) {
+  async login(userData: UserEntity) {
+    const { password, ...user } = userData;
     return {
+      user,
       token: this.jwtService.sign({ id: user.id }),
     };
   }

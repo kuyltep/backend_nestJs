@@ -43,8 +43,10 @@ export class CommentsService {
     };
     return await this.CommentRepository.save(comment);
   }
-  async update(updateCommentDto: UpdateCommentDto): Promise<CommentEntity> {
-    const userId = +updateCommentDto.user;
+  async update(
+    updateCommentDto: UpdateCommentDto,
+    userId: number,
+  ): Promise<CommentEntity> {
     const productId = +updateCommentDto.product;
     const comment = await this.CommentRepository.findOneBy({
       user: {
@@ -64,19 +66,17 @@ export class CommentsService {
   async remove(
     commentId: number,
     deleteCommentDto: DeleteCommentDto,
+    userId: number,
   ): Promise<DeleteResult> {
-    const userId = +deleteCommentDto.user;
     const productId = +deleteCommentDto.product;
-    // return await this.CommentRepository.delete({
-    //   user: {
-    //     id: userId,
-    //   },
-    //   product: {
-    //     id: productId,
-    //   },
-    // });
     return await this.CommentRepository.delete({
       id: commentId,
+      product: {
+        id: productId,
+      },
+      user: {
+        id: userId,
+      },
     });
   }
 
@@ -89,18 +89,6 @@ export class CommentsService {
       },
       relations: {
         product: true,
-      },
-    });
-  }
-  async getProductComments(productId: number) {
-    return await this.CommentRepository.find({
-      where: {
-        product: {
-          id: productId,
-        },
-      },
-      relations: {
-        comment_likes: true,
       },
     });
   }

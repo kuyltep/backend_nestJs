@@ -1,7 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+  Request,
+  Response,
+  UseGuards,
+} from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @ApiTags('categories')
 @Controller('categories')
@@ -9,8 +23,14 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoriesService.createCategory(createCategoryDto);
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 201, type: CreateCategoryDto })
+  create(@Body() createCategoryDto: CreateCategoryDto, @Request() req) {
+    if (req.user.role.name === 'admin') {
+      return this.categoriesService.createCategory(createCategoryDto);
+    }
+    throw new BadRequestException('Insufficient access rights');
   }
 
   @Get()
@@ -23,8 +43,13 @@ export class CategoriesController {
     return this.categoriesService.findOneCategory(+categoryId);
   }
 
-  @Delete('category/:categoryId')
-  remove(@Param('categoryId') categoryId: string) {
-    return this.categoriesService.remove(+categoryId);
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
+  @Delete('category')
+  remove(@Query('id') categoryId: string, @Request() req) {
+    if (req.user.role.name === 'admin') {
+      return this.categoriesService.remove(+categoryId);
+    }
+    throw new BadRequestException('Insufficient access rights');
   }
 }
