@@ -18,11 +18,14 @@ export default class AudioEntity {
   markup: string;
   @Column()
   path: string;
-  @OneToOne(() => ProductEntity, (product) => product.audio)
+  @OneToOne(() => ProductEntity, (product) => product.audio, {
+    nullable: true,
+    onDelete: 'NO ACTION',
+  })
   @JoinColumn({ name: 'product_id' })
   product: ProductEntity;
 
-  @ManyToOne(() => UserEntity, (user) => user.audio)
+  @ManyToOne(() => UserEntity, (user) => user.audio, { onDelete: 'NO ACTION' })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
