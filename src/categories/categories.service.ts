@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryEntity } from './entities/category.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { Errors } from 'src/constants/errors';
 
 @Injectable()
 export class CategoriesService {
@@ -25,23 +26,38 @@ export class CategoriesService {
     const { name } = createCategoryDto;
     const category = new CategoryEntity();
     category.name = name;
-
-    return await this.categoryRepository.save(category);
+    try {
+      return await this.categoryRepository.save(category);
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
 
   async findAllCategories(): Promise<CategoryEntity[]> {
-    return await this.categoryRepository.find();
+    try {
+      return await this.categoryRepository.find();
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
 
   async findOneCategory(id: number): Promise<CategoryEntity> {
-    return await this.categoryRepository.findOne({
-      where: { id: id },
-      relations: {
-        products: true,
-      },
-    });
+    try {
+      return await this.categoryRepository.findOne({
+        where: { id: id },
+        relations: {
+          products: true,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
   async remove(id: number): Promise<DeleteResult> {
-    return await this.categoryRepository.delete(id);
+    try {
+      return await this.categoryRepository.delete(id);
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
 }

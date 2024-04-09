@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentLikeEntity } from './entities/comment_like.entity';
 import { Repository } from 'typeorm';
 import { CreateCommentLikeDto } from './dto/create-comment_like.dto';
 import { DeleteUserCommentLikeDto } from './dto/delete-comment_like.dto';
+import { Errors } from 'src/constants/errors';
 
 @Injectable()
 export class CommentLikesService {
@@ -30,19 +31,31 @@ export class CommentLikesService {
         id: commentId,
       },
     };
-    return await this.CommentLikeRepository.save(commentLike);
+    try {
+      return await this.CommentLikeRepository.save(commentLike);
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
 
   async findUserCommentLikes(userId: number) {
-    return await this.CommentLikeRepository.find({
-      where: { user: { id: userId } },
-    });
+    try {
+      return await this.CommentLikeRepository.find({
+        where: { user: { id: userId } },
+      });
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
 
   async deleteUserCommentLike(userId: number, commentId: number) {
-    return await this.CommentLikeRepository.delete({
-      user: { id: userId },
-      comment: { id: commentId },
-    });
+    try {
+      return await this.CommentLikeRepository.delete({
+        user: { id: userId },
+        comment: { id: commentId },
+      });
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
 }

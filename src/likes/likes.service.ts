@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LikeEntity } from './entities/like.entity';
 import { Repository } from 'typeorm';
+import { Errors } from 'src/constants/errors';
 
 @Injectable()
 export class LikesService {
@@ -23,7 +24,7 @@ export class LikesService {
         },
       });
     } catch (error) {
-      throw new BadRequestException('Error');
+      throw new BadRequestException(Errors.SERVER_ERROR);
     }
   }
   async createUserLike(userId: number, textId: number) {
@@ -41,7 +42,7 @@ export class LikesService {
     try {
       return await this.LikeRepository.save(like);
     } catch (error) {
-      throw new BadRequestException('Error');
+      throw new BadRequestException(Errors.SERVER_ERROR);
     }
   }
   async removeUserLike(userId: number, textId: number) {
@@ -51,7 +52,7 @@ export class LikesService {
         text: { id: textId },
       });
     } catch (error) {
-      throw new BadRequestException('Error');
+      throw new BadRequestException(Errors.SERVER_ERROR);
     }
   }
 }

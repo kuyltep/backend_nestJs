@@ -5,6 +5,7 @@ import { DeleteResult, Repository } from 'typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { DeleteCommentDto } from './dto/delete-comment.dto';
+import { Errors } from 'src/constants/errors';
 
 @Injectable()
 export class CommentsService {
@@ -41,7 +42,11 @@ export class CommentsService {
         id: productId,
       },
     };
-    return await this.CommentRepository.save(comment);
+    try {
+      return await this.CommentRepository.save(comment);
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
   async update(
     updateCommentDto: UpdateCommentDto,
@@ -61,7 +66,11 @@ export class CommentsService {
     }
     const { content } = updateCommentDto;
     comment.content = content;
-    return await this.CommentRepository.save(comment);
+    try {
+      return await this.CommentRepository.save(comment);
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
   async remove(
     commentId: number,
@@ -69,27 +78,35 @@ export class CommentsService {
     userId: number,
   ): Promise<DeleteResult> {
     const productId = +deleteCommentDto.product;
-    return await this.CommentRepository.delete({
-      id: commentId,
-      product: {
-        id: productId,
-      },
-      user: {
-        id: userId,
-      },
-    });
-  }
-
-  async getUserComments(userId: number) {
-    return await this.CommentRepository.find({
-      where: {
+    try {
+      return await this.CommentRepository.delete({
+        id: commentId,
+        product: {
+          id: productId,
+        },
         user: {
           id: userId,
         },
-      },
-      relations: {
-        product: true,
-      },
-    });
+      });
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
+  }
+
+  async getUserComments(userId: number) {
+    try {
+      return await this.CommentRepository.find({
+        where: {
+          user: {
+            id: userId,
+          },
+        },
+        relations: {
+          product: true,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
 }

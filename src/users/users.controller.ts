@@ -1,32 +1,28 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Delete,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiTags } from '@nestjs/swagger';
 
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { UserId } from '../decorators/user-id.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { DeleteUserDto } from './dto/delete-user.dto';
 
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  // @Post('register')
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.usersService.create(createUserDto);
-  // }
-
   @ApiBearerAuth('token')
-  @ApiHeader({
-    name: 'token',
-    schema: {
-      type: 'http',
-      required: ['id'],
-    },
-  })
-  @Get('me')
   @UseGuards(JwtAuthGuard)
-  getMe(@UserId() id: number) {
-    return this.usersService.findById(id);
+  @ApiBody({ type: DeleteUserDto })
+  @Delete('user/delete')
+  deleteUser(@Body() deleteUser: DeleteUserDto, @Req() request) {
+    const user = request.user;
+    return this.usersService.deleteUser(deleteUser, user);
   }
 }

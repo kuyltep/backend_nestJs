@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import AudioDto from './dto/audio.dto';
 import { instance } from 'src/utils/axios';
 import * as fs from 'fs';
+import { Errors } from 'src/constants/errors';
 
 @Injectable()
 export class AudioService {
@@ -38,7 +39,7 @@ export class AudioService {
       };
       return this.audioRepository.save(audioEntity);
     } catch (error) {
-      throw new BadRequestException('Server error');
+      throw new BadRequestException(Errors.SERVER_ERROR);
     }
   }
   async getFileUrlFromJobStatusResponse(fileUrl, jobId) {
@@ -57,7 +58,7 @@ export class AudioService {
           );
         }
       } catch (error) {
-        throw new BadRequestException('Error audio create process');
+        throw new BadRequestException(Errors.AUDIO_CREATE_ERROR);
       }
       await new Promise((resolve) => setTimeout(resolve, 5000));
     }
@@ -76,18 +77,22 @@ export class AudioService {
     const audio = await this.audioRepository.findOneBy({ id });
 
     if (!audio) {
-      throw new NotFoundException('Audiofile not found');
+      throw new NotFoundException(Errors.AUDIO_NOT_FOUND);
     }
 
     const filePath = audio.path;
     return filePath;
   }
   async deleteAudio(id: string, user) {
-    return await this.audioRepository.delete({
-      id: +id,
-      user: {
-        id: user.id,
-      },
-    });
+    try {
+      return await this.audioRepository.delete({
+        id: +id,
+        user: {
+          id: user.id,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
   }
 }

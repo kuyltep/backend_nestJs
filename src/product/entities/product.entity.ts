@@ -34,23 +34,31 @@ export class ProductEntity {
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @ManyToOne(() => CategoryEntity, (category) => category.products)
+  @ManyToOne(() => CategoryEntity, (category) => category.products, {
+    onDelete: 'NO ACTION',
+  })
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity;
 
-  @ManyToOne(() => UserEntity, (user) => user.product)
+  @ManyToOne(() => UserEntity, (user) => user.product, {
+    onDelete: 'NO ACTION',
+  })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  @OneToMany(() => LikeEntity, (like) => like.text)
+  @OneToMany(() => LikeEntity, (like) => like.text, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'likes_id' })
   likes: LikeEntity[];
 
-  @OneToMany(() => CommentEntity, (comment) => comment.product)
+  @OneToMany(() => CommentEntity, (comment) => comment.product, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'comments_id' })
   comments: CommentEntity[];
 
-  @OneToOne(() => AudioEntity, (audio) => audio.product)
+  @OneToOne(() => AudioEntity, (audio) => audio.product, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'audio_id' })
   audio: AudioEntity;
 }
