@@ -7,6 +7,7 @@ import { UserEntity } from './entities/user.entity';
 import * as argon2 from 'argon2';
 import { Errors } from 'src/constants/errors';
 import { DeleteUserDto } from './dto/delete-user.dto';
+import { UpdateUserInfoDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -74,6 +75,17 @@ export class UsersService {
     try {
       const user = await this.repository.findOne({ where: { id: userId } });
       user.tokens += tokens;
+      return await this.repository.update(userId, user);
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
+  }
+
+  async updateUserInfo(userId: number, userInfo: UpdateUserInfoDto) {
+    try {
+      const user = await this.repository.findOneBy({ id: userId });
+      user.username = userInfo.username;
+      user.email = userInfo.email;
       return await this.repository.update(userId, user);
     } catch (error) {
       throw new BadRequestException(Errors.SERVER_ERROR);
