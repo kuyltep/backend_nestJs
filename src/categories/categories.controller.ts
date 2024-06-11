@@ -46,7 +46,8 @@ export class CategoriesController {
   }
 
   @ApiBearerAuth('token')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Delete('category')
   remove(@Query('id') categoryId: string, @Request() req) {
     if (req.user.role.name === 'admin') {

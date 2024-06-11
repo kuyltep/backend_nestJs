@@ -16,6 +16,8 @@ import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import AudioDto from './dto/audio.dto';
 import { createReadStream } from 'fs';
+import { RolesGuard } from 'src/auth/guards/role.guard';
+import { Roles } from 'src/utils/decorators/role.decorator';
 
 @ApiTags('Audio')
 @Controller('audio')
@@ -50,7 +52,8 @@ export class AudioController {
 
   @Delete(':id')
   @ApiBearerAuth('token')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   deleteAudio(@Param('id') id: string, @Req() request) {
     const user = request.user;
     return this.audioService.deleteAudio(id, user);

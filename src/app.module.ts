@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getPostgresConfig } from './configs/postgres.config';
-import { PromoModule } from './promo/promo.module';
 import { CategoryModule } from './categories/categories.module';
 import { ProductModule } from './product/product.module';
 import { UsersModule } from './users/users.module';
@@ -24,7 +23,6 @@ import { AudioModule } from './audio/audio.module';
       inject: [ConfigService],
       useFactory: getPostgresConfig,
     }),
-    PromoModule,
     ProductModule,
     CategoryModule,
     RolesModule,

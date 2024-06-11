@@ -47,7 +47,7 @@ export class AuthService {
       const { password, ...user } = userData;
       return {
         user,
-        token: this.jwtService.sign({ id: userData.id }),
+        token: this.jwtService.sign({ id: userData.id }, { expiresIn: '24h' }),
       };
     } catch (err) {
       // throw new ForbiddenException('Ошибка при регистрации');
