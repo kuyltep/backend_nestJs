@@ -1,31 +1,23 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsNumberString } from 'class-validator';
+import { IsString, IsNumberString, IsNotEmpty } from 'class-validator';
 
 export class CreateProductDto {
-  @ApiProperty({
-    type: 'file',
-    properties: {
-      file: {
-        type: 'string',
-        format: 'binary',
-      },
-    },
-  })
-  image: Express.Multer.File;
-
+  @ApiProperty({ default: 'name' })
+  @IsNotEmpty()
   @IsString()
-  name: string = 'Название пиццы';
+  name: string;
 
+  @ApiProperty({ default: 'description' })
+  @IsNotEmpty()
   @IsString()
-  description: string = 'Состав';
+  description: string;
 
-  @IsString()
-  sizes: string = '20,30,40';
-
-  @IsString()
-  prices: string = '400,599,700';
-
+  @ApiProperty({ default: '1' })
   @IsNumberString()
   categoryId: number;
+
+  @ApiProperty({ default: '' })
+  @IsNumberString()
+  audioId: number;
 }

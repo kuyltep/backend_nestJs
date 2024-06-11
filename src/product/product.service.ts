@@ -7,6 +7,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { CategoryEntity } from 'src/categories/entities/category.entity';
+import AudioEntity from 'src/audio/entities/audio.entity';
 
 @Injectable()
 export class ProductService {
@@ -16,18 +17,18 @@ export class ProductService {
 
     @InjectRepository(CategoryEntity)
     private categoryRepository: Repository<CategoryEntity>,
+
+    @InjectRepository(AudioEntity)
+    private audioRepository: Repository<AudioEntity>,
   ) {}
 
-  async create(
-    dto: CreateProductDto,
-    image: Express.Multer.File,
-  ): Promise<ProductEntity> {
+  async create(dto: CreateProductDto, user): Promise<ProductEntity> {
+    const audio = await this.audioRepository.findOneBy({ id: dto.audioId });
     const product = new ProductEntity();
-    product.image = image.filename;
     product.name = dto.name;
     product.description = dto.description;
-    product.prices = dto.prices.split(',').map((x) => +x);
-
+    product.user = user;
+    product.audio = audio;
     const newProduct = await this.productRepository.save(product);
 
     const category = await this.categoryRepository.findOne({
@@ -49,6 +50,7 @@ export class ProductService {
         comments: { comment_likes: true },
         category: true,
         user: true,
+        audio: true,
       },
     });
   }
@@ -61,49 +63,32 @@ export class ProductService {
         likes: true,
         comments: { comment_likes: true },
         user: true,
+        audio: true,
       },
     });
   }
 
-  async findByCategoryId(categoryId: number): Promise<ProductEntity[]> {
-    return this.productRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
-      .where('product.categoryId = :categoryId', { categoryId })
-      .getMany();
-  }
-
-  async update(
-    id: number,
-    dto: UpdateProductDto,
-    image: Express.Multer.File,
-  ): Promise<ProductEntity> {
-    const toUpdate = await this.productRepository.findOneBy({ id });
-    if (!toUpdate) {
-      throw new BadRequestException(`Записи с id=${id} не найдено`);
+  async update(id: number, dto: UpdateProductDto, user) {
+    const product = await this.productRepository.findOne({
+      where: { id: id },
+      relations: {
+        audio: true,
+        category: true,
+      },
+    });
+    if (product.audio.id !== dto.audioId) {
+      const audio = await this.audioRepository.findOneBy({ id: dto.audioId });
+      product.audio = audio;
     }
-    if (dto.name) toUpdate.name = dto.name;
-    if (dto.description) toUpdate.description = dto.description;
-    if (dto.prices) toUpdate.prices = dto.prices.split(',').map((x) => +x);
-    if (dto.categoryId) {
-      const category = await this.categoryRepository.findOne({
-        where: { id: dto.categoryId },
-        relations: ['products'],
+    if (product.category.id !== dto.categoryId) {
+      const category = await this.categoryRepository.findOneBy({
+        id: dto.categoryId,
       });
-      toUpdate.category = category;
+      product.category = category;
     }
-    if (image) {
-      if (toUpdate.image !== image.filename) {
-        fs.unlink(`db_images/product/${toUpdate.image}`, (err) => {
-          if (err) {
-            console.error(err);
-          }
-        });
-      }
-      toUpdate.image = image.filename;
-    }
-
-    return this.productRepository.save(toUpdate);
+    product.name = dto.name;
+    product.description = dto.description;
+    return await this.productRepository.update(id, product);
   }
 
   async delete(id: number): Promise<DeleteResult> {

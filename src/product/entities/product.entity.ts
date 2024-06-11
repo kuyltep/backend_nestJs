@@ -20,16 +20,10 @@ export class ProductEntity {
   id: number;
 
   @Column()
-  image: string;
-
-  @Column()
   name: string;
 
   @Column()
   description: string;
-
-  @Column('int', { array: true })
-  prices: number[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

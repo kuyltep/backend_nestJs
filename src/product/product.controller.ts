@@ -10,8 +10,16 @@ import {
   UseInterceptors,
   UploadedFile,
   Response,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
-import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DeleteResult } from 'typeorm';
 
@@ -20,32 +28,26 @@ import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductEntity } from './entities/product.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @ApiTags('product')
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('token')
+  @ApiBody({ type: CreateProductDto })
   @Post()
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('image', { storage: fileStorage }))
-  create(
-    @Body() dto: CreateProductDto,
-    @UploadedFile() image: Express.Multer.File,
-  ): Promise<ProductEntity> {
-    return this.productService.create(dto, image);
+  create(@Body() dto: CreateProductDto, @Req() req): Promise<ProductEntity> {
+    const user = req.user;
+    return this.productService.create(dto, user);
   }
 
   @Get()
-  @ApiQuery({ name: 'categoryId', required: false })
-  findAll(@Query('categoryId') categoryId: number): Promise<ProductEntity[]> {
-    if (categoryId) return this.productService.findByCategoryId(categoryId);
-    else return this.productService.findAll();
-  }
-
-  @Get('/image/:path')
-  download(@Param('path') path: string, @Response() response) {
-    return response.sendFile(path, { root: './db_images/product' });
+  findAll(): Promise<ProductEntity[]> {
+    return this.productService.findAll();
   }
 
   @Get('/:id')
@@ -53,17 +55,21 @@ export class ProductController {
     return this.productService.findOne(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('token')
+  @ApiBody({ type: UpdateProductDto })
   @Patch(':id')
-  @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('image', { storage: fileStorage }))
   update(
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
-    @UploadedFile() image: Express.Multer.File,
-  ): Promise<ProductEntity> {
-    return this.productService.update(+id, dto, image);
+    @Req() request,
+  ) {
+    const user = request.user;
+    return this.productService.update(+id, dto, user);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('token')
   @Delete(':id')
   delete(@Param('id') id: string): Promise<DeleteResult> {
     return this.productService.delete(+id);
