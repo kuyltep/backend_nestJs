@@ -16,7 +16,8 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
-
+import { RolesGuard } from 'src/auth/guards/role.guard';
+import { Roles } from 'src/utils/decorators/role.decorator';
 @ApiTags('categories')
 @Controller('categories')
 export class CategoriesController {
@@ -24,7 +25,8 @@ export class CategoriesController {
 
   @Post()
   @ApiBearerAuth('token')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @ApiResponse({ status: 201, type: CreateCategoryDto })
   create(@Body() createCategoryDto: CreateCategoryDto, @Request() req) {
     if (req.user.role.name === 'admin') {

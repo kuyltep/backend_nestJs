@@ -17,6 +17,7 @@ export class AudioService {
   constructor(
     @InjectRepository(AudioEntity)
     private audioRepository: Repository<AudioEntity>,
+    @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
   async createAudio(audioBody: AudioDto, user) {

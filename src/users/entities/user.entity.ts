@@ -30,7 +30,7 @@ export class UserEntity {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: 0 })
   tokens: number;
 
   @CreateDateColumn({ type: 'timestamp' })

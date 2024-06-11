@@ -59,7 +59,7 @@ export class AuthService {
     const { password, ...user } = userData;
     return {
       user,
-      token: this.jwtService.sign({ id: user.id }),
+      token: this.jwtService.sign({ id: user.id }, { expiresIn: '24h' }),
     };
   }
 }
