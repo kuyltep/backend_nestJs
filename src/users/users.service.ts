@@ -7,7 +7,10 @@ import { UserEntity } from './entities/user.entity';
 import * as argon2 from 'argon2';
 import { Errors } from 'src/constants/errors';
 import { DeleteUserDto } from './dto/delete-user.dto';
-import { UpdateUserInfoDto } from './dto/update-user.dto';
+import {
+  UpdateUserInfoDto,
+  UpdateUserPasswordDto,
+} from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -87,6 +90,28 @@ export class UsersService {
       user.username = userInfo.username;
       user.email = userInfo.email;
       return await this.repository.update(userId, user);
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
+  }
+
+  async updateUserPassword(
+    userId: number,
+    passwordInfo: UpdateUserPasswordDto,
+  ) {
+    try {
+      const user = await this.repository.findOneBy({ id: userId });
+      const isPasswordCorrect = await argon2.verify(
+        user.password,
+        passwordInfo.currentPassword,
+      );
+      if (!isPasswordCorrect) {
+        throw new BadRequestException(Errors.PASSWORD_ERROR);
+      } else {
+        const newPassword = await argon2.hash(passwordInfo.newPassword);
+        user.password = newPassword;
+        return await this.repository.update(userId, user);
+      }
     } catch (error) {
       throw new BadRequestException(Errors.SERVER_ERROR);
     }

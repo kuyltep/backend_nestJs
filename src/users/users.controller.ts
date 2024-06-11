@@ -43,6 +43,18 @@ export class UsersController {
 
   @ApiBearerAuth('token')
   @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: UpdateUserPasswordDto })
+  @Patch('user/password')
+  updateUserPassword(
+    @Body() udpateUserPassword: UpdateUserPasswordDto,
+    @Req() request,
+  ) {
+    const userId = request.user.id;
+    return this.usersService.updateUserPassword(userId, udpateUserPassword);
+  }
+
+  @ApiBearerAuth('token')
+  @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateUserCoinsDto })
   @Patch('user/tokens')
   updateUserTokens(
