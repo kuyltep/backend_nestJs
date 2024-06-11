@@ -70,4 +70,13 @@ export class UsersService {
       throw new BadRequestException(Errors.SERVER_ERROR);
     }
   }
+  async udpateUserTokens(userId: number, tokens: number) {
+    try {
+      const user = await this.repository.findOne({ where: { id: userId } });
+      user.tokens += tokens;
+      return await this.repository.update(userId, user);
+    } catch (error) {
+      throw new BadRequestException(Errors.SERVER_ERROR);
+    }
+  }
 }
